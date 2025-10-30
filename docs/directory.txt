@@ -1,0 +1,82 @@
+exam_managetool/
+│
+├─ index.html            ← メインUI
+├─ style.css             ← 全体のスタイル
+├─ script.js             ← ロジック一式
+│
+├─ /data/
+│   ├─ keywords.json     ← キーワード候補（タグ用途）
+│   ├─ domains.json      ← 領域リスト
+│   ├─ config.json       ← 設定（バージョンや表示名など）※前回案のまま運用可
+│   └─ species.json      ← ★追加：学名候補リスト
+│        例）["Pseudomonas aeruginosa","Staphylococcus aureus","Escherichia coli", ...]
+│        → script.jsがここから読み込み、エディタへの挿入候補として使う
+│
+├─ /assets/
+│   ├─ logo.png
+│   ├─ sample_xray.jpg   ← 公開しても問題ないサンプル画像
+│   └─ icons/            ← ボタン用アイコン（B/I/Uなどのアイコンもここに置ける）
+│
+├─ /docs/
+│   ├─ readme.md         ← ツールの概要・目的
+│   └─ instruction.html  ← 使い方マニュアル（CSV読み込み〜エクスポートまで）
+│
+└─ /modules/             ← ★新規サブディレクトリ
+    └─ richtext.js       ← リッチテキスト用の補助関数群
+                           - bold/italic/underline のトグル処理
+                           - 許可外タグのクリーニング
+                           - 学名（斜体）挿入
+                           - 質問文テンプレ挿入
+
+
+exam_private/
+│
+├─ data.csv          ← 全問題バンク（機密）
+├─ history.csv       ← 出題履歴（年度・正答率など、機密）
+├─ new.csv           ← 作問結果のエクスポート（このツールから吐き出されたもの）
+│
+├─ logs/
+│   ├─ change_log_2025-10-29.csv
+│   └─ backup_2025-10-20.csv
+│
+├─ images/
+│   ├─ chest_xray_2025A.png
+│   ├─ gram_stain_case12.jpg
+│   └─ ...
+│
+└─ metadata/
+    ├─ mapping.csv
+    └─ reviewer_notes.csv
+
+ファイル間の依存関係まとめ
+| ファイル                       | 主な役割    | 読み込み先 / 生成先                   |
+| -------------------------- | ------- | ----------------------------- |
+| `index.html`               | メインUI   | 直接ブラウザで開く                     |
+| `style.css`                | UIデザイン  | `index.html`で読み込む             |
+| `script.js`                | ロジック制御  | `index.html`で読み込む             |
+| `data/keywords.json`       | キーワード候補 | `script.js`（fetch）で読み込む       |
+| `data/domains.json`        | 領域候補    | `script.js`で読み込む              |
+| `data/config.json`         | 基本設定    | `script.js`で読み込む              |
+| `exam_private/data.csv`    | 過去問本体   | 利用者がブラウザにアップロード               |
+| `exam_private/history.csv` | 出題履歴    | 同上                            |
+| `exam_private/new.csv`     | 新規作問出力  | `script.js`で生成・ダウンロード         |
+| `exam_private/images/`     | 非公開画像   | `data.csv`の`image_ref`から参照される |
+
+
+改善すべき点
+問題の意図などを入れる自由コメント欄　解説をつける
+問題の修正は制限して、問題の複製にして元の問題はnon-activeにする方がいいかもしれない
+その場合、問題番号はR1を末尾につける
+
+日本語の場合は問題番号の末尾にja、英語の場合は問題番号の末尾にenをつける
+
+集計
+難易度,1,2,3,4,5,合計
+日本語,20,30,40,20,10,120
+英語,1,2,5,3,2,13
+合計,21,32,45,23,12,133
+
+難易度,1,2,3,4,5,合計
+細菌学
+寄生虫学
+解剖学

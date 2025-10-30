@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>感染症統合型試験問題管理ツール 利用ガイド</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont,
+          "Helvetica Neue", Arial, sans-serif;
+        color: #1f2937;
+        background: #fff;
+        line-height: 1.6;
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #111827;
+        line-height: 1.3;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin-top: 2rem;
+        border-left: 4px solid #2563eb;
+        padding-left: 0.5rem;
+      }
+      h3 {
+        font-size: 0.95rem;
+        margin-top: 1.2rem;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0 0.3em;
+        border-radius: 4px;
+        font-size: 0.85em;
+      }
+      .small {
+        font-size: 0.8rem;
+        color: #6b7280;
+        line-height: 1.4;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      li {
+        margin-bottom: 0.4rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.85rem;
+      }
+      th,
+      td {
+        border: 1px solid #d1d5db;
+        padding: 0.4rem 0.5rem;
+        vertical-align: top;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>感染症統合型試験問題管理ツール 利用ガイド</h1>
+    <p class="small">
+      最終更新: 2025-10-29<br />
+      このドキュメントは、問題の登録・改訂・出力・集計の運用ルールをまとめたものです。
+    </p>
+
+    <h2>1. ツールの画面構成</h2>
+    <p>画面上部に4つのタブがあります。</p>
+    <ul>
+      <li>
+        <strong>問題一覧</strong
+        >（あるいは「問題管理」）<br />読み込んだ全問題を検索・一覧表示し、クリックすると詳細が表示されます。
+      </li>
+      <li>
+        <strong>作問・編集</strong
+        >（「問題作成・編集」）<br />新規作問・既存問題の改訂・一部編集を行います。
+      </li>
+      <li>
+        <strong>入出力</strong
+        ><br />CSVファイルの読み込み（過去問題・出題履歴）、および新規CSV/更新CSVとしての出力を行います。
+      </li>
+      <li>
+        <strong>統計</strong
+        ><br />問題数の集計（言語×難易度、作問者×難易度、領域×難易度など）を確認できます。
+      </li>
+    </ul>
+
+    <h2>2. データの基本項目</h2>
+    <p>
+      本ツールでは、問題は1行1レコードとして扱われ、主に以下のフィールドを持ちます。
+    </p>
+
+    <table>
+      <tr>
+        <th>question_id</th>
+        <td>
+          問題ID。例: <code>Q2025-101a</code>。改訂版は
+          <code>Q2025-101aR1</code> のように末尾にR番号を付ける。
+        </td>
+      </tr>
+      <tr>
+        <th>case_id</th>
+        <td>
+          症例ID。連問で共通させるID。例:
+          <code>CASE2025-101</code>。症例のない単問は空欄にする。
+        </td>
+      </tr>
+      <tr>
+        <th>case_text</th>
+        <td>症例文（症例提示）。HTML可。</td>
+      </tr>
+      <tr>
+        <th>title</th>
+        <td>
+          問題のタイトル（内部用。受験者には表示されない）。例:
+          <code>肺炎の尿中抗原</code>
+        </td>
+      </tr>
+      <tr>
+        <th>department</th>
+        <td>作成教室・講座。例: <code>細菌学</code></td>
+      </tr>
+      <tr>
+        <th>author</th>
+        <td>作問者（担当者名・チーム名）。</td>
+      </tr>
+      <tr>
+        <th>language</th>
+        <td>問題の使用言語。<code>ja</code> または <code>en</code>。</td>
+      </tr>
+      <tr>
+        <th>difficulty</th>
+        <td>難易度（1〜5）。<br />Lv1: 正答率80%以上 / Lv5: 10%未満など。</td>
+      </tr>
+      <tr>
+        <th>domain1, domain2</th>
+        <td>領域。最大2つまで。例: 呼吸器感染症 / 診断。</td>
+      </tr>
+      <tr>
+        <th>active</th>
+        <td><code>true</code>（現役） or <code>false</code>（非現役）。</td>
+      </tr>
+      <tr>
+        <th>tag</th>
+        <td>自由タグ（補助的な分類や注意書き）。</td>
+      </tr>
+      <tr>
+        <th>question_text</th>
+        <td>
+          問題文。リッチテキスト可（<code>&lt;b&gt;</code>,
+          <code>&lt;i&gt;</code>, <code>&lt;u&gt;</code>,
+          <code>&lt;em&gt;</code> のみ許可）。
+        </td>
+      </tr>
+      <tr>
+        <th>choice_a〜e</th>
+        <td>選択肢a〜e。リッチテキスト可。</td>
+      </tr>
+      <tr>
+        <th>correct</th>
+        <td>正解肢（<code>a</code>や<code>a,c</code>などカンマ区切り）。</td>
+      </tr>
+      <tr>
+        <th>keywords</th>
+        <td>
+          検索・分類補助用のキーワード。カンマ区切り。<br />例:
+          <code>肺炎,尿中抗原,診断</code>
+        </td>
+      </tr>
+      <tr>
+        <th>image_file</th>
+        <td>画像ファイル名（例: <code>case101_xray.png</code>）。</td>
+      </tr>
+      <tr>
+        <th>comment</th>
+        <td>教員向けコメント（意図・注意点など）。</td>
+      </tr>
+      <tr>
+        <th>explanation</th>
+        <td>学生向け解説。</td>
+      </tr>
+      <tr>
+        <th>created_at</th>
+        <td>作成日時。</td>
+      </tr>
+      <tr>
+        <th>updated_at</th>
+        <td>最終更新日時。</td>
+      </tr>
+      <tr>
+        <th>revision_note</th>
+        <td>
+          修正メモ。「第107回医師国家試験A14を改変」など由来も含めて記録する。
+        </td>
+      </tr>
+    </table>
+
+    <p class="small">
+      ※ <code>question_text</code> / <code>choice_a〜e</code> /
+      <code>case_text</code> は、<br />
+      太字（&lt;b&gt;,&lt;strong&gt;）・斜体（&lt;i&gt;,&lt;em&gt;）・下線（&lt;u&gt;）のみHTML可。
+    </p>
+
+    <h2>3. 症例・連問・改訂のルール</h2>
+
+    <h3>3.1 単問 / 症例なし</h3>
+    <ul>
+      <li><code>case_id</code> は空欄。</li>
+      <li>「単問（症例なし）」として扱われる。</li>
+    </ul>
+
+    <h3>3.2 単問 / 症例あり</h3>
+    <ul>
+      <li><code>case_id</code> はあるが、そのIDを持つのが1問だけ。</li>
+      <li>「単問（症例あり）」として扱われる。</li>
+    </ul>
+
+    <h3>3.3 連問</h3>
+    <ul>
+      <li>複数の問題が同一の <code>case_id</code> を共有する。</li>
+      <li>
+        例: <code>Q2025-101a</code>, <code>Q2025-101b</code>,
+        <code>Q2025-101c</code> がすべて <code>CASE2025-101</code>。
+      </li>
+      <li>
+        詳細画面では「連問（Q2025-101a、Q2025-101b、Q2025-101c）」のように関連ID一覧が自動表示される。
+      </li>
+    </ul>
+
+    <h3>3.4 改訂（R1, R2...）</h3>
+    <ul>
+      <li>
+        問題の内容を大きく修正する場合は、元の問題を直接書き換えず、新IDで保存します。
+      </li>
+      <li>
+        <code>Q2025-001</code> → 改訂版は <code>Q2025-001R1</code> → さらに
+        <code>Q2025-001R2</code>。
+      </li>
+      <li>詳細画面では同系列（Rつき含む）が「履歴」として一覧表示される。</li>
+      <li>
+        古い版を
+        <code>active=false</code>
+        にするかどうかは人が判断する（自動では切り替えない）。
+      </li>
+    </ul>
+
+    <h2>4. 作問タブでの操作</h2>
+
+    <h3>4.1 モード</h3>
+    <ul>
+      <li>
+        <strong>新規作成 (new)</strong><br />
+        完全な新しい問題を作る。<br />
+        <code>question_id</code> は新規のIDを入力する。
+      </li>
+
+      <li>
+        <strong>既存編集 (edit)</strong><br />
+        既存の問題をそのIDのまま一部修正するモード。<br />
+        通常はロックされており、直接の上書きは推奨しない。<br />
+        <strong>ロック解除</strong
+        >ボタンを押さないとハード項目（ID/症例など）は編集できない。
+      </li>
+
+      <li>
+        <strong>改訂（複製）(revise)</strong><br />
+        既存問題を複製し、新ID（例:
+        元が<code>Q2025-001</code>なら<code>Q2025-001R1</code>など）で保存する。<br />
+        元の問題は残り、複製後の問題は「新しい問題」として扱われる。
+      </li>
+    </ul>
+
+    <h3>4.2 ロック</h3>
+    <ul>
+      <li>
+        <code>data-lock="hard"</code>
+        の項目（ID、症例ID、教室、言語など）は安全のため編集ロックされる。
+      </li>
+      <li>
+        <code>data-lock="soft"</code>
+        の項目（選択肢、キーワード、解説など）は編集しやすい。
+      </li>
+      <li>
+        <strong>ロック解除</strong>を押すと、<code>data-lock="hard"</code>
+        の項目も一時的に編集できる。<br />
+        これは「過去問の直接修正」というリスクを伴う操作なので、注意喚起のアラートが出る。
+      </li>
+    </ul>
+
+    <h3>4.3 保存ボタン</h3>
+    <ul>
+      <li>保存ボタンは「保存（新規・更新）」のみ。</li>
+      <li>
+        <strong>new / revise モード</strong><br />
+        入力した
+        <code>question_id</code>
+        が既存と重複していたら保存できない。必ず新しいIDにする。<br />
+        保存するとこの問題は「新規問題」としてリストに追加され、<code
+          >new.csv</code
+        >
+        の対象にもなる。
+      </li>
+      <li>
+        <strong>edit モード</strong><br />
+        ロック解除後のみ、同じ
+        <code>question_id</code> を上書き保存できる。<br />
+        これは“元の問題を直接手術する”イメージ。履歴管理の都合でむやみに使わない。
+      </li>
+    </ul>
+
+    <h3>4.4 クリア</h3>
+    <ul>
+      <li>
+        「新しい問題としてリセット」ボタンで、フォームを初期化し、モードを
+        <strong>new</strong> に戻す。
+      </li>
+      <li>これにより、うっかり既存問題を上書きすることを防ぎます。</li>
+    </ul>
+
+    <h2>5. CSV入出力</h2>
+
+    <h3>5.1 読み込み</h3>
+    <ul>
+      <li>
+        「問題CSV」から
+        <code>data.csv</code>（既存/過去問）を読み込むと、一覧に反映される。
+      </li>
+      <li>
+        「履歴CSV」から
+        <code>history.csv</code>
+        を読み込むと、各問題の出題歴（どの試験で出たか等）が詳細に表示される。
+      </li>
+      <li>
+        読み込み時に、古いCSVの列名（「難易度」「領域1」など）も内部の標準フィールドに自動でマッピングされる。
+      </li>
+    </ul>
+
+    <h3>5.2 出力</h3>
+    <ul>
+      <li>
+        <strong>new.csv</strong><br />
+        このセッションで新規または改訂として保存した問題のみ。<br />
+        新しく追加・配布したい問題リストとして利用する。
+      </li>
+
+      <li>
+        <strong>new_update.csv</strong><br />
+        現在管理中の全問題（過去から含めて）をエクスポートしたもの。<br />
+        バックアップや一括レビュー用。
+      </li>
+    </ul>
+
+    <h2>6. 統計タブ</h2>
+    <p>
+      統計タブでは、読み込んだ全問題（=現在の一覧に入っている問題）を集計する。
+    </p>
+
+    <h3>6.1 表示される主な集計</h3>
+    <ul>
+      <li><strong>総問題数</strong></li>
+      <li>
+        <strong>言語 × 難易度</strong><br />
+        例：行=日本語/英語、列=難易度1〜5と合計
+      </li>
+      <li>
+        <strong>作問者 × 難易度</strong><br />
+        行=作問者（author）、列=難易度1〜5と合計
+      </li>
+      <li>
+        <strong>領域 × 難易度</strong><br />
+        行=領域名（domain1とdomain2を両方カウント）、列=難易度1〜5と合計
+      </li>
+    </ul>
+
+    <p class="small">
+      難易度は1〜5で扱う。<br />
+      過去データ由来で <code>Lv2</code> のような表記になっていても、内部で
+      <code>2</code> に正規化して集計する。
+    </p>
+
+    <h2>7. よくある運用の流れ</h2>
+
+    <h3>7.1 新しい問題を作るとき</h3>
+    <ol>
+      <li>「作問・編集」タブ → モードを「新規作成」にする。</li>
+      <li>
+        <code>question_id</code> を新規でふる（例: <code>Q2025-210</code>）。
+      </li>
+      <li>
+        症例問題なら <code>case_id</code> を入れる（例:
+        <code>CASE2025-210</code>）。単問なら空欄でよい。
+      </li>
+      <li>
+        問題文と選択肢を入力。リッチテキストボタン（B/I/U）や学名挿入を使える。
+      </li>
+      <li>正解肢にチェック。</li>
+      <li>
+        保存（新規・更新）→ 新規として登録される。<br />
+        → 統計タブにも反映される。
+      </li>
+    </ol>
+
+    <h3>7.2 既存問題を改訂（別IDでR1などをつける）するとき</h3>
+    <ol>
+      <li>「問題一覧」タブで該当の問題をクリック → 詳細を確認。</li>
+      <li>「複製（改訂版作成）」を押すと、作問タブに複製された状態で入る。</li>
+      <li>モードが「改訂（複製）」になっていることを確認。</li>
+      <li>
+        <code>question_id</code> を <code>...R1</code> のような新IDに変更。
+      </li>
+      <li>
+        必要な修正を行って「保存（新規・更新）」。<br />
+        元の問題は残り、新しい問題として一覧に追加される。
+      </li>
+    </ol>
+
+    <h3>7.3 過去問を直接直したい（本当にやむを得ないときだけ）</h3>
+    <ol>
+      <li>「問題一覧」→ 問題クリック→「編集」。</li>
+      <li>モードが「既存編集」になる。</li>
+      <li>ロック解除ボタンを押す。（警告が出る）</li>
+      <li>修正する。</li>
+      <li>
+        「保存（新規・更新）」。<br />
+        この場合は同じ <code>question_id</code> のまま上書きされる。
+      </li>
+    </ol>
+
+    <p class="small">
+      基本方針は「既存は残して、改訂版を別IDで作る」。<br />
+      直接編集は最小限にして、必ず revision_note に理由と日付を書き残す。
+    </p>
+
+    <h2>8. 注意と推奨事項</h2>
+    <ul>
+      <li>
+        <strong>question_id は重複禁止。</strong><br />
+        new / revise モードで同じIDを使うと保存できません。
+      </li>
+      <li>
+        <strong>症例ID (<code>case_id</code>) は症例単位で統一。</strong><br />
+        連問のときは全問で同じ <code>case_id</code> を入れる。
+      </li>
+      <li>
+        症例がない単問は <code>case_id</code> を空欄にする。（自動で埋めない）
+      </li>
+      <li>
+        領域（<code>domain1</code>/<code>domain2</code>）は統計に使われるので、できれば2つまで正確に選ぶ。
+      </li>
+      <li>
+        学生向け公開前のチェック用に、<code>comment</code>
+        で「この選択肢はひっかけ？」などの設計意図を必ず残す。
+      </li>
+      <li>解説（<code>explanation</code>）は学生配布にも使える想定。</li>
+    </ul>
+
+    <hr />
+    <p class="small">
+      このツールは「作問の透明化」「改訂の追跡」「出題の再利用性向上」「守り（事故防止）」を目的としています。<br />
+      運用ルールを守ることで、誰がいつどの問題をどう変えたかが後から追えるようになります。
+    </p>
+  </body>
+</html>

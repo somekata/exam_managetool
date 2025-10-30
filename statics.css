@@ -1,0 +1,70 @@
+/* 統計タブ用のまとまり */
+.stats-block {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.stats-block h4 {
+  margin: 0 0 .5rem;
+  font-size: .9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* 集計テーブル */
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.stats-table th {
+  background: #f3f4f6;
+  padding: .4rem .5rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+}
+
+.stats-table td {
+  padding: .4rem .5rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+  color: #1f2937;
+}
+
+.stats-note {
+  font-size: .7rem;
+  color: #6b7280;
+  margin-top: .5rem;
+  line-height: 1.4;
+}
+
+/* 全体件数表示 */
+#stat-total {
+  font-size: .9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stats-table.wide {
+  table-layout: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-table.wide th:first-child,
+.stats-table.wide td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stats-table.wide td {
+  text-align: right;
+}

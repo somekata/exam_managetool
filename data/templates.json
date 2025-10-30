@@ -1,0 +1,106 @@
+[
+  {
+    "id": "correct_single_ja",
+    "label": "〜として正しいのはどれか。（単一）",
+    "insertText": "として正しいのはどれか。",
+    "lang": "ja",
+    "answerMode": "single",
+    "category": "正しい"
+  },
+  {
+    "id": "correct_multi2_ja",
+    "label": "〜として正しいのはどれか。2つ選べ。（複数）",
+    "insertText": "〜として正しいのはどれか。2つ選べ。",
+    "lang": "ja",
+    "answerMode": "multi",
+    "category": "正しい"
+  },
+    {
+    "id": "correct_multiall_ja",
+    "label": "〜として正しいのはどれか。全て選べ。（複数）",
+    "insertText": "として正しいのはどれか。全て選べ。",
+    "lang": "ja",
+    "answerMode": "multi",
+    "category": "正しい"
+  },
+  {
+    "id": "incorrect_single_ja",
+    "label": "誤っているのはどれか。（単一）",
+    "insertText": "<strong><u>誤っている</u></strong>のはどれか。",
+    "lang": "ja",
+    "answerMode": "single",
+    "category": "誤り"
+  },
+  {
+    "id": "incorrect_multi2_ja",
+    "label": "誤っているのはどれか。2つ選べ。（複数）",
+    "insertText": "<strong><u>誤っている</u></strong>のはどれか。2つ選べ。",
+    "lang": "ja",
+    "answerMode": "multi",
+    "category": "誤り"
+  },
+  {
+    "id": "which_correct_en_single",
+    "label": "Which of the following statements is correct?",
+    "insertText": "Which of the following statements is correct?",
+    "lang": "en",
+    "answerMode": "single",
+    "category": "correct"
+  },
+  {
+    "id": "which_correct_en_multi",
+    "label": "Which of the following statements is correct? (Choose two.)",
+    "insertText": "Which of the following statements is correct? Choose two.",
+    "lang": "en",
+    "answerMode": "multi",
+    "category": "correct"
+  },
+    {
+    "id": "which_correct_en_multiall",
+    "label": "Which of the following statements is correct? (Choose all.)",
+    "insertText": "Which of the following statements is correct? Choose all.",
+    "lang": "en",
+    "answerMode": "multi",
+    "category": "correct"
+  },
+  {
+    "id": "which_incorrect_en_single",
+    "label": "Which of the following statements is NOT correct?",
+    "insertText": "Which of the following statements is <strong><u>NOT</u></strong> correct?",
+    "lang": "en",
+    "answerMode": "single",
+    "category": "incorrect"
+  },
+  {
+    "id": "which_incorrect_en_multi",
+    "label": "Which of the following statements is NOT correct? (Choose two.)",
+    "insertText": "Which of the following statements is <strong><u>NOT</u></strong> correct? (Choose two.)",
+    "lang": "en",
+    "answerMode": "multi",
+    "category": "incorrect"
+  },
+  {
+    "id": "first_action_ja",
+    "label": "最初に行うべき対応はどれか。（単一）",
+    "insertText": "最初に行うべき対応はどれか。",
+    "lang": "ja",
+    "answerMode": "single",
+    "category": "行動"
+  },
+  {
+    "id": "best_description_ja",
+    "label": "次の説明のうち最も適切なのはどれか。",
+    "insertText": "次の説明のうち最も適切なのはどれか。",
+    "lang": "ja",
+    "answerMode": "single",
+    "category": "適切さ"
+  },
+  
+  {
+    "id": "national_test",
+    "label": "（第〇回医師国家試験XXより一部改変）",
+    "insertText": "（第〇回医師国家試験XXより一部改変）",
+    "lang": "ja",
+    "category": "出題元"
+  }
+]

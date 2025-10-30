@@ -1,0 +1,701 @@
+/* =============================
+   ベースレイアウト
+============================= */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f5f6fa;
+  color: #333;
+  margin: 0;
+  line-height: 1.6;
+}
+
+header {
+  background: #1f2937;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+header h1 {
+  margin: 0 0 .5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.tab-button {
+  background: #374151;
+  color: #fff;
+  border: 1px solid #4b5563;
+  border-radius: .4rem;
+  padding: .4rem .8rem;
+  font-size: .9rem;
+  cursor: pointer;
+}
+.tab-button.active {
+  background: #10b981;
+  border-color: #10b981;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+main {
+  padding: 1rem 1.5rem 4rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.tab-content {
+  display: none;
+  background: #fff;
+  border-radius: .6rem;
+  padding: 1rem 1.2rem 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 2rem;
+}
+.tab-content.active {
+  display: block;
+}
+
+h2 {
+  font-size: 1rem;
+  margin: .2rem 0 1rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: .9rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 .5rem;
+}
+
+/* =============================
+   フィルタ・一覧テーブル
+============================= */
+.filter-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem;
+}
+.filter-area input,
+.filter-area select {
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .4rem .6rem;
+  font-size: .8rem;
+  min-height: 2rem;
+  background: #fff;
+}
+.filter-area button {
+  background: #10b981;
+  color: #0f172a;
+  border: 1px solid #10b981;
+  border-radius: .4rem;
+  padding: .4rem .8rem;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 2rem;
+}
+
+#questionTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+#questionTable th {
+  background: #f3f4f6;
+  padding: .5rem .6rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+
+  /* ▼ 追加：ヘッダー固定 */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+#questionTable td {
+  padding: .5rem .6rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+  color: #1f2937;
+}
+#questionTable tr:hover {
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+#detailArea {
+  margin-top: 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: 1rem;
+  font-size: .85rem;
+}
+#detailArea h3 {
+  margin-top: 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: #111827;
+}
+#questionDetail pre {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .5rem .6rem;
+  white-space: pre-wrap;
+  font-size: .75rem;
+  line-height: 1.4;
+  color: #374151;
+}
+
+.hidden {
+  display: none;
+}
+
+/* =============================
+   編集モード・ロック操作セクション
+============================= */
+.io-section {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.io-section h3 {
+  margin-top: 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: .8rem;
+  color: #374151;
+  margin-bottom: .75rem;
+}
+.mode-row label {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  cursor: pointer;
+  user-select: none;
+}
+.lock-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+.danger-btn {
+  background: #ef4444;
+  color: #fff;
+  border: 1px solid #ef4444;
+  border-radius: .5rem;
+  padding: .5rem .8rem;
+  font-weight: 600;
+  font-size: .8rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+.danger-btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+.small-hint {
+  font-size: .7rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* =============================
+   作問フォーム
+============================= */
+
+#tab-create form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .75rem;
+}
+
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  font-size: .8rem;
+  color: #374151;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .5rem .6rem;
+  font-size: .8rem;
+  background: #fff;
+  min-height: 2rem;
+  resize: none;
+}
+
+.form-buttons button#saveBtn {
+  min-width: 10rem;
+}
+.form-buttons button#resetBtn {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* =============================
+   症例ブロック / コメント・解説ブロック / タイムスタンプブロック
+============================= */
+.case-block {
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem;
+  background: #f9fafb;
+}
+.case-block legend {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #111827;
+}
+.case-block label {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-bottom: .75rem;
+  font-size: .8rem;
+  color: #374151;
+}
+.case-block textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .5rem .6rem;
+  font-size: .8rem;
+  min-height: 4rem;
+  line-height: 1.4;
+  background: #fff;
+  resize: vertical;
+}
+#caseText {
+  min-height: 4rem;
+}
+
+/* =============================
+   リッチテキストエディタ
+============================= */
+.question-block {
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  background: #fff;
+  padding: 0;
+}
+.question-block legend {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  border-radius: .5rem .5rem 0 0;
+}
+.editor-toolbar.mini {
+  border-radius: .4rem;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  padding: .25rem .4rem;
+  gap: .4rem;
+}
+
+.rt-btn {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .3rem .5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .8rem;
+  line-height: 1;
+  min-height: 2rem;
+  min-width: 2rem;
+  text-align: center;
+  color: #1f2937;
+}
+.rt-btn:hover {
+  background: #f3f4f6;
+}
+
+.editor-toolbar select,
+.editor-toolbar .rt-template {
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  background: #fff;
+  font-size: .75rem;
+  padding: .3rem .5rem;
+  line-height: 1.2;
+  min-height: 2rem;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.speciesSelect.mini {
+  font-size: .7rem;
+  min-height: 1.8rem;
+  padding: .2rem .4rem;
+}
+
+.rich-editor {
+  min-height: 6rem;
+  padding: .75rem;
+  font-size: .85rem;
+  line-height: 1.5;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 .5rem .5rem;
+  background: #fff;
+  word-break: break-word;
+  outline: none;
+}
+.rich-editor.choice {
+  min-height: 3rem;
+  border-radius: .4rem;
+}
+.rich-editor:focus {
+  outline: 2px solid #93c5fd;
+  border-color: #93c5fd;
+}
+
+/* =============================
+   選択肢ブロック
+============================= */
+.choices {
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .75rem;
+  background: #f9fafb;
+}
+.choices legend {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #111827;
+}
+.choice-row {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  margin-bottom: .75rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .5rem .6rem .6rem;
+}
+.choice-label {
+  font-size: .8rem;
+  font-weight: 600;
+  color: #111827;
+}
+.choice-row label {
+  font-size: .75rem;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+/* =============================
+   画像添付
+============================= */
+.image-block {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.image-block input[type="file"] {
+  font-size: .8rem;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .4rem;
+  width: 100%;
+  max-width: 360px;
+  min-height: 2rem;
+  color: #1f2937;
+}
+.image-preview-area {
+  min-height: 2rem;
+  font-size: .75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* =============================
+   キーワード
+============================= */
+fieldset > legend {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #111827;
+}
+#keywordInput {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .5rem .6rem;
+  font-size: .8rem;
+  width: 100%;
+  max-width: 600px;
+  min-height: 2rem;
+}
+.suggest-box {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .4rem;
+  margin-top: .4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  font-size: .75rem;
+  max-width: 600px;
+}
+.suggest-item {
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  color: #075985;
+  border-radius: .4rem;
+  padding: .2rem .5rem;
+  cursor: pointer;
+  line-height: 1.2;
+}
+.suggest-item:hover {
+  background: #bae6fd;
+}
+
+/* =============================
+   ボタン
+============================= */
+.form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: .5rem;
+}
+.form-buttons button {
+  background: #10b981;
+  color: #0f172a;
+  border: 1px solid #10b981;
+  border-radius: .5rem;
+  padding: .6rem 1rem;
+  font-weight: 600;
+  font-size: .8rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+.form-buttons button[type="reset"] {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* detailエリア内のボタン(一覧→編集/複製) */
+#detailArea .form-buttons button {
+  background: #10b981;
+  color: #0f172a;
+  border: 1px solid #10b981;
+  border-radius: .5rem;
+  padding: .5rem .8rem;
+  font-weight: 600;
+  font-size: .8rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+
+/* 補足説明など */
+.info-note {
+  font-size: .75rem;
+  color: #6b7280;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  padding: .5rem .75rem;
+  line-height: 1.4;
+}
+
+/* =============================
+   ロック状態
+============================= */
+.locked .locked-field {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border-color: #d1d5db !important;
+}
+
+.locked [data-lock="hard"] {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #d1d5db;
+  pointer-events: none;
+}
+
+.locked [data-lock="hard"].rich-editor {
+  outline: none;
+  border-color: #d1d5db;
+}
+
+.locked .editor-toolbar [data-lock="hard"],
+.locked .editor-toolbar select[data-lock="hard"],
+.locked .editor-toolbar button[data-lock="hard"] {
+  opacity: .4;
+  pointer-events: none;
+}
+
+/* data-lock="soft" は編集可能 */
+
+/* =============================
+   入出力タブのUI（流用）
+============================= */
+.io-section input[type="file"] {
+  font-size: .8rem;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: .4rem;
+  padding: .4rem;
+  width: 100%;
+  max-width: 360px;
+  min-height: 2rem;
+  color: #1f2937;
+}
+
+.io-section button {
+  background: #10b981;
+  color: #0f172a;
+  border: 1px solid #10b981;
+  border-radius: .5rem;
+  padding: .6rem 1rem;
+  font-weight: 600;
+  font-size: .8rem;
+  cursor: pointer;
+  min-height: 2rem;
+}
+
+/* =============================
+   フッター
+============================= */
+footer {
+  text-align: center;
+  font-size: .75rem;
+  color: #6b7280;
+  padding: 2rem 1rem 4rem;
+}
+
+/* =============================
+   レスポンシブ
+============================= */
+@media (max-width: 700px) {
+  header h1 {
+    font-size: 1rem;
+  }
+  .tab-button {
+    font-size: .8rem;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .editor-toolbar {
+    gap: .4rem;
+  }
+  .editor-toolbar select {
+    font-size: .7rem;
+  }
+}
+
+/* 問題一覧スクロール領域 */
+#tableScroll {
+  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto; /* ← 追加 */
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  white-space: nowrap; /* ← 追加：カラムを潰さず横スクロールさせる */
+}
+
+#questionTable th,
+#questionTable td {
+  white-space: nowrap; /* セル内で勝手に折り返さない */
+  max-width: 400px;    /* 問題文セルなどが暴走しないように */
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+/* 詳細表示を表に被せないように調整 */
+#detailArea {
+  position: relative;          /* fixedをやめる */
+  background: #f9fafb;
+  border-top: 2px solid #ccc;
+  padding: 12px;
+  margin-top: 16px;            /* 表との間隔を確保 */
+  border-radius: 0.5rem;
+}
+
+/* ヘッダーと閉じるボタン */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.close-btn {
+  background: #e11d48;
+  color: #fff;
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background: #be123c;
+}
+

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>感染症統合型試験 管理ツール</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="statics.css" />
+  </head>
+  <body>
+    <header>
+      <h1>感染症統合型試験 管理ツール</h1>
+      <nav>
+        <button class="tab-button active" data-tab="tab-view">
+          📘 問題一覧
+        </button>
+        <button class="tab-button" data-tab="tab-create">✏️ 作問・編集</button>
+        <button class="tab-button" data-tab="tab-io">📂 入出力</button>
+        <button class="tab-button" data-tab="tab-stats">📊 統計</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- =======================
+       タブ1: 問題一覧・検索
+       ======================= -->
+      <section id="tab-view" class="tab-content active">
+        <h2>問題一覧・検索</h2>
+
+        <div class="filter-area">
+          <input type="text" id="searchInput" placeholder="キーワード検索" />
+          <select id="domainFilter">
+            <option value="">領域フィルタ</option>
+            <!-- script.js が domains.json から動的に追加 -->
+          </select>
+          <select id="langFilter">
+            <option value="">言語</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+          </select>
+          <select id="difficultyFilter">
+            <option value="">難易度</option>
+            <option value="1">レベル1</option>
+            <option value="2">レベル2</option>
+            <option value="3">レベル3</option>
+            <option value="4">レベル4</option>
+            <option value="5">レベル5</option>
+          </select>
+          <select id="activeFilter">
+            <option value="">active状態</option>
+            <option value="true">Active</option>
+            <option value="false">Non-active</option>
+          </select>
+          <button id="searchBtn">検索</button>
+          <button id="clearFilterBtn">リセット</button>
+        </div>
+
+        <!-- ▼ 一覧をスクロール可能にするラッパ -->
+        <div id="tableScroll">
+          <table id="questionTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>caseID</th>
+                <th>タイトル</th>
+                <th>領域1 / 領域2</th>
+                <th>教室</th>
+                <th>難易度</th>
+                <th>言語</th>
+                <th>active</th>
+                <th>問題文</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <!-- ▲ ラッパここまで -->
+
+        <div id="detailArea" class="hidden">
+          <div class="detail-header">
+            <button id="closeDetailBtn" class="close-btn">× 閉じる</button>
+          </div>
+          <h3>詳細</h3>
+          <div id="questionDetail">
+            <!-- script.jsで埋める -->
+          </div>
+
+          <div class="form-buttons">
+            <button id="editBtn">この問題を編集</button>
+            <button id="duplicateBtn">この問題を複製して新しい版を作る</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================
+       タブ2: 作問・編集
+       ======================= -->
+      <section id="tab-create" class="tab-content">
+        <h2>新規作問・編集</h2>
+
+        <!-- モード選択とロック操作 -->
+        <section class="io-section">
+          <h3>編集モード</h3>
+          <div class="mode-row">
+            <label
+              ><input type="radio" name="editMode" value="new" checked />
+              新規作成</label
+            >
+            <label
+              ><input type="radio" name="editMode" value="edit" />
+              既存問題を編集（ロック付き）</label
+            >
+            <label
+              ><input type="radio" name="editMode" value="revise" />
+              既存問題を複製して改訂版を作成（R1など）</label
+            >
+          </div>
+          <div class="lock-row">
+            <button type="button" id="unlockBtn" class="danger-btn">
+              ロック解除（注意）
+            </button>
+            <span class="small-hint"
+              >※
+              過去問の直接改変は推奨されません。通常は「複製してR1」を使ってください。</span
+            >
+          </div>
+        </section>
+
+        <form id="questionForm">
+          <!-- 作問メタ情報 -->
+          <div class="form-grid">
+            <label
+              >問題ID
+              <input
+                type="text"
+                id="questionId"
+                data-lock="hard"
+                placeholder="例: Q2025-101a"
+                required
+              />
+            </label>
+
+            <label
+              >症例ID（連問で共通・症例なし単問は空欄で可）
+              <input
+                type="text"
+                id="caseId"
+                data-lock="hard"
+                placeholder="例: CASE2025-101（症例なしなら空欄）"
+              />
+            </label>
+
+            <label
+              >作問者
+              <input
+                type="text"
+                id="author"
+                data-lock="hard"
+                placeholder="例: Tanaka"
+              />
+            </label>
+
+            <label
+              >所属教室
+              <input
+                type="text"
+                id="department"
+                data-lock="hard"
+                placeholder="例: 細菌学"
+              />
+            </label>
+
+            <label
+              >問題タイトル（管理用）
+              <input
+                type="text"
+                id="title"
+                data-lock="hard"
+                placeholder="例: 尿中抗原 / Ramsay-Hunt診断"
+              />
+            </label>
+
+            <label
+              >言語
+              <select id="language" data-lock="hard">
+                <option value="ja" selected>日本語</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+
+            <label
+              >難易度
+              <select id="difficulty" data-lock="hard">
+                <option value="1">レベル1</option>
+                <option value="2">レベル2</option>
+                <option value="3" selected>レベル3</option>
+                <option value="4">レベル4</option>
+                <option value="5">レベル5</option>
+              </select>
+            </label>
+
+            <label
+              >領域1
+              <select id="domain1" data-lock="hard">
+                <option value="">選択</option>
+                <!-- script.jsがdomains.jsonから追加 -->
+              </select>
+            </label>
+
+            <label
+              >領域2
+              <select id="domain2" data-lock="hard">
+                <option value="">選択</option>
+                <!-- script.jsがdomains.jsonから追加 -->
+              </select>
+            </label>
+
+            <label
+              >active
+              <select id="active" data-lock="hard">
+                <option value="true">Active</option>
+                <option value="false">Non-active</option>
+              </select>
+            </label>
+
+            <label
+              >タグ（出題区分など）
+              <input
+                type="text"
+                id="tag"
+                data-lock="hard"
+                placeholder="例: 国家試験模試, CBT, 定期試験"
+              />
+            </label>
+          </div>
+
+          <!-- 症例本文 -->
+          <fieldset class="case-block">
+            <legend>症例本文（連問で共通）</legend>
+            <textarea
+              id="caseText"
+              data-lock="hard"
+              placeholder="症例記述（HTML可: b/i/u/em）を入力。単問のときは空でもよい。"
+            ></textarea>
+          </fieldset>
+
+          <!-- 問題文 -->
+          <fieldset class="question-block">
+            <legend>問題文</legend>
+
+            <div class="editor-toolbar">
+              <button
+                type="button"
+                class="rt-btn"
+                data-cmd="bold"
+                data-target="questionText"
+              >
+                <b>B</b>
+              </button>
+              <button
+                type="button"
+                class="rt-btn"
+                data-cmd="italic"
+                data-target="questionText"
+              >
+                <i>I</i>
+              </button>
+              <button
+                type="button"
+                class="rt-btn"
+                data-cmd="underline"
+                data-target="questionText"
+              >
+                <u>U</u>
+              </button>
+
+              <select
+                id="templateSelect"
+                class="rt-template"
+                data-target="questionText"
+                data-lock="hard"
+              >
+                <option value="">定型文</option>
+                <!-- script.jsがtemplates.jsonからoptionを追加 -->
+              </select>
+              <button type="button" id="insertTemplateBtn" data-lock="hard">
+                挿入
+              </button>
+
+              <select
+                class="speciesSelect"
+                data-target="questionText"
+                data-lock="hard"
+              >
+                <option value="">学名</option>
+                <!-- script.jsがspecies.jsonからoptionを追加 -->
+              </select>
+            </div>
+
+            <div
+              id="questionText"
+              class="rich-editor"
+              contenteditable="true"
+              data-lock="hard"
+              placeholder="問題文を入力..."
+            ></div>
+          </fieldset>
+
+          <!-- 選択肢 -->
+          <fieldset class="choices">
+            <legend>選択肢と正解</legend>
+
+            <!-- choice a -->
+            <div class="choice-row">
+              <label class="choice-label">a.</label>
+              <div class="editor-toolbar mini">
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="bold"
+                  data-target="choiceA"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="italic"
+                  data-target="choiceA"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="underline"
+                  data-target="choiceA"
+                >
+                  <u>U</u>
+                </button>
+
+                <select class="speciesSelect mini" data-target="choiceA">
+                  <option value="">学名</option>
+                </select>
+              </div>
+              <div
+                id="choiceA"
+                class="rich-editor choice"
+                contenteditable="true"
+                data-lock="soft"
+                placeholder="選択肢aを入力..."
+              ></div>
+              <label
+                ><input type="checkbox" class="correct" value="a" />
+                正解a</label
+              >
+            </div>
+
+            <!-- choice b -->
+            <div class="choice-row">
+              <label class="choice-label">b.</label>
+              <div class="editor-toolbar mini">
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="bold"
+                  data-target="choiceB"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="italic"
+                  data-target="choiceB"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="underline"
+                  data-target="choiceB"
+                >
+                  <u>U</u>
+                </button>
+
+                <select class="speciesSelect mini" data-target="choiceB">
+                  <option value="">学名</option>
+                </select>
+              </div>
+              <div
+                id="choiceB"
+                class="rich-editor choice"
+                contenteditable="true"
+                data-lock="soft"
+                placeholder="選択肢bを入力..."
+              ></div>
+              <label
+                ><input type="checkbox" class="correct" value="b" />
+                正解b</label
+              >
+            </div>
+
+            <!-- choice c -->
+            <div class="choice-row">
+              <label class="choice-label">c.</label>
+              <div class="editor-toolbar mini">
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="bold"
+                  data-target="choiceC"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="italic"
+                  data-target="choiceC"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="underline"
+                  data-target="choiceC"
+                >
+                  <u>U</u>
+                </button>
+
+                <select class="speciesSelect mini" data-target="choiceC">
+                  <option value="">学名</option>
+                </select>
+              </div>
+              <div
+                id="choiceC"
+                class="rich-editor choice"
+                contenteditable="true"
+                data-lock="soft"
+                placeholder="選択肢cを入力..."
+              ></div>
+              <label
+                ><input type="checkbox" class="correct" value="c" />
+                正解c</label
+              >
+            </div>
+
+            <!-- choice d -->
+            <div class="choice-row">
+              <label class="choice-label">d.</label>
+              <div class="editor-toolbar mini">
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="bold"
+                  data-target="choiceD"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="italic"
+                  data-target="choiceD"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="underline"
+                  data-target="choiceD"
+                >
+                  <u>U</u>
+                </button>
+
+                <select class="speciesSelect mini" data-target="choiceD">
+                  <option value="">学名</option>
+                </select>
+              </div>
+              <div
+                id="choiceD"
+                class="rich-editor choice"
+                contenteditable="true"
+                data-lock="soft"
+                placeholder="選択肢dを入力..."
+              ></div>
+              <label
+                ><input type="checkbox" class="correct" value="d" />
+                正解d</label
+              >
+            </div>
+
+            <!-- choice e -->
+            <div class="choice-row">
+              <label class="choice-label">e.</label>
+              <div class="editor-toolbar mini">
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="bold"
+                  data-target="choiceE"
+                >
+                  B
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="italic"
+                  data-target="choiceE"
+                >
+                  <i>I</i>
+                </button>
+                <button
+                  type="button"
+                  class="rt-btn"
+                  data-cmd="underline"
+                  data-target="choiceE"
+                >
+                  <u>U</u>
+                </button>
+
+                <select class="speciesSelect mini" data-target="choiceE">
+                  <option value="">学名</option>
+                </select>
+              </div>
+              <div
+                id="choiceE"
+                class="rich-editor choice"
+                contenteditable="true"
+                data-lock="soft"
+                placeholder="選択肢eを入力..."
+              ></div>
+              <label
+                ><input type="checkbox" class="correct" value="e" />
+                正解e</label
+              >
+            </div>
+          </fieldset>
+
+          <!-- 添付画像 -->
+          <fieldset class="case-block">
+            <legend>画像添付（任意）</legend>
+            <div class="image-block">
+              <input
+                type="file"
+                id="imageFile"
+                accept="image/*"
+                data-lock="hard"
+              />
+              <div class="small-hint">
+                画像ファイルは /data/images/
+                に保存され、CSVにはファイル名だけ入ります。
+              </div>
+              <div id="imagePreview" class="image-preview-area"></div>
+            </div>
+          </fieldset>
+
+          <!-- キーワード -->
+          <fieldset>
+            <legend>キーワード（検索用）</legend>
+            <input
+              type="text"
+              id="keywordInput"
+              placeholder="カンマ区切りで入力"
+              data-lock="soft"
+            />
+            <div class="small-hint">候補をクリックすると追加されます</div>
+            <div id="keywordSuggest" class="suggest-box"></div>
+          </fieldset>
+
+          <!-- 作問意図・解説 -->
+          <fieldset class="case-block">
+            <legend>自由コメント・解説</legend>
+            <label
+              >自由コメント（教員用メモ）
+              <textarea
+                id="commentField"
+                data-lock="soft"
+                placeholder="この問題で学生に考えさせたいこと、注意点、出題背景など"
+              ></textarea>
+            </label>
+
+            <label
+              >解説（学生向けに配布できる解説）
+              <textarea
+                id="explanationField"
+                data-lock="soft"
+                placeholder="正解の根拠、他の選択肢が誤りである理由など"
+              ></textarea>
+            </label>
+          </fieldset>
+
+          <!-- タイムスタンプ・リビジョン -->
+          <fieldset class="case-block">
+            <legend>記録情報</legend>
+            <div class="form-grid">
+              <label
+                >作成日時
+                <input
+                  type="text"
+                  id="createdAt"
+                  data-lock="hard"
+                  placeholder="自動入力"
+                  readonly
+                />
+              </label>
+              <label
+                >最終更新日時
+                <input
+                  type="text"
+                  id="updatedAt"
+                  data-lock="hard"
+                  placeholder="自動入力"
+                  readonly
+                />
+              </label>
+              <label
+                >修正メモ（今回の変更内容）
+                <input
+                  type="text"
+                  id="revisionNote"
+                  data-lock="soft"
+                  placeholder="例: 選択肢bの表現を修正、R1作成など"
+                />
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- ボタン -->
+          <div class="form-buttons">
+            <button type="button" id="saveBtn">保存（新規・更新）</button>
+            <!-- updateBtnは将来的には不要になるが、今は残してもよいのでhiddenのまま維持可 -->
+            <button type="button" id="updateBtn" class="hidden">
+              更新（既存・旧）
+            </button>
+            <button type="button" id="resetBtn">
+              新しい問題としてリセット
+            </button>
+          </div>
+        </form>
+
+        <div class="info-note">
+          <strong>ロックについて:</strong>
+          既存問題は原則ロックされ、ID・症例・問題文などは直接書き換えできません。<br />
+          改訂したい場合は「複製して改訂版を作成（R1付与）」を推奨します。<br />
+          どうしても元問題を直したい場合のみ「ロック解除（注意）」を押し、警告に同意してください。
+        </div>
+      </section>
+
+      <!-- =======================
+       タブ3: 入出力
+       ======================= -->
+      <section id="tab-io" class="tab-content">
+        <h2>入出力</h2>
+
+        <div class="io-section">
+          <h3>過去データ読み込み</h3>
+          <label
+            >問題CSV
+            <input type="file" id="csvFile" accept=".csv" />
+          </label>
+          <label
+            >出題履歴CSV
+            <input type="file" id="historyFile" accept=".csv" />
+          </label>
+        </div>
+
+        <div class="io-section">
+          <h3>新規・修正版出力</h3>
+          <button id="downloadNewBtn">new.csvとして出力（新規問題）</button>
+          <button id="downloadUpdateBtn">
+            new_update.csvとして出力（既存修正）
+          </button>
+        </div>
+      </section>
+      <section id="tab-stats" class="tab-content">
+        <h3>問題集計</h3>
+
+        <div class="stats-block">
+          <h4>全体</h4>
+          <div id="stat-total">-</div>
+        </div>
+
+        <div class="stats-block">
+          <h4>言語 × 難易度</h4>
+          <table class="stats-table wide" id="cross-lang">
+            <thead>
+              <tr>
+                <th>言語</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>合計</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="stats-block">
+          <h4>作問者 × 難易度</h4>
+          <table class="stats-table wide" id="cross-author">
+            <thead>
+              <tr>
+                <th>作問者</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>合計</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="stats-block">
+          <h4>領域 × 難易度</h4>
+          <table class="stats-table wide" id="cross-domain">
+            <thead>
+              <tr>
+                <th>領域</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>合計</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="stats-note">※領域1と領域2の両方をカウント対象とします。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2025 感染症統合プロジェクト — ver.1.2</footer>
+
+    <script src="script.js"></script>
+    <script src="statics.js"></script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "appName": "感染症統合型試験 管理ツール",
+  "version": "1.0.0",
+  "author": "感染症統合プロジェクト",
+  "defaultLanguage": "ja",
+  "defaultDifficulty": "3",
+  "allowRichTextTags": ["b", "strong", "i", "em", "u"],
+  "csvDelimiter": ",",
+  "autoSave": false,
+  "displayFooterInfo": true,
+  "updateDate": "2025-10-29"
+}
