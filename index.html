@@ -3,24 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>感染症統合型試験 管理ツール</title>
+    <title>試験問題管理ツール</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="statics.css" />
   </head>
   <body>
     <header>
-      <h1>感染症統合型試験 管理ツール</h1>
+      <h1>試験問題管理ツール</h1>
       <nav>
-        <button class="tab-button active" data-tab="tab-view">
-          📘 問題一覧
+        <button class="tab-button active" data-tab="tab-view">📘 問題一覧</button>
+        <button class="tab-button" data-tab="tab-create">
+          ✏️ 作問・編集
         </button>
-        <button class="tab-button" data-tab="tab-create">✏️ 作問・編集</button>
         <button class="tab-button" data-tab="tab-io">📂 入出力</button>
         <button class="tab-button" data-tab="tab-stats">📊 統計</button>
+        <button class="tab-button" data-tab="tab-guide">💁 案内</button>
       </nav>
     </header>
 
     <main>
+
       <!-- =======================
        タブ1: 問題一覧・検索
        ======================= -->
@@ -91,7 +93,6 @@
           </div>
         </div>
       </section>
-
       <!-- =======================
        タブ2: 作問・編集
        ======================= -->
@@ -650,7 +651,6 @@
           どうしても元問題を直したい場合のみ「ロック解除（注意）」を押し、警告に同意してください。
         </div>
       </section>
-
       <!-- =======================
        タブ3: 入出力
        ======================= -->
@@ -740,9 +740,72 @@
           <p class="stats-note">※領域1と領域2の両方をカウント対象とします。</p>
         </div>
       </section>
+      <section id="tab-guide" class="tab-content">
+        <h2>このツールの使い方</h2>
+        <p>
+          大阪公立大学医学部の感染症統合型試験の作成を支援する目的で開発したツールです。他の試験の作成にもご利用いただけます。
+        </p>
+        <p>
+          詳細については以下の<span class="greenmark"
+            >管理者および作成者向けの解説</span
+          >を確認してください。
+        </p>
+        <ul>
+          <li>
+            <a href="docs/instruction.html" target="_blank"
+              >管理者および作成者向けの解説</a
+            >
+          </li>
+          <li>
+            <a href="https://somekata.github.io/exam_pickup/" target="_blank"
+              >試験問題ピックアップツール</a
+            >
+          </li>
+        </ul>
+        <hr />
+        <h3>簡単な解説</h3>
+        <p>
+          試験問題管理ツールでは、問題作成・編集、CSV形式の問題データを読み込み、統計、出力までを一元管理できます。<br />
+          <ul>
+            <li>初期状態で問題一覧は空の状態になっています。</li>
+            <li>作問・編集で新規に作成し、保存すると一覧に反映されます。</li>
+            <li>入出力で「過去データ読み込み」の問題CSVにCSVファイルをアップすることでも問題一覧に反映されます。</li>
+            出題履歴CSVにアップするとエラーになるため注意して下さい。また、CSVファイル以外のファイルをアップしてもエラーになります。
+            <li>入力または編集した問題はCSVとして出力が可能です。</li>
+            <li>出力したCSVは<span class="greenmark"
+            >試験問題ピックアップツール</span>でdocxファイルに変換することができます。</li>
+          </ul>
+        </p>
+        <h3>関連するリンク</h3>
+        <ul>
+          <li>
+            <a href="https://somekata.github.io/quiz/" target="_blank"
+              >感染症クイズへようこそ</a
+            >
+          </li>
+          <li>
+            <a href="https://somekata.github.io/filgapquiz/" target="_blank"
+              >Fil-GAPで出題した問題一覧</a
+            >
+          </li>
+                    <li>
+            <a href="http://filgap.kenkyuukai.jp/" target="_blank"
+              >Fil-GAPのページ</a
+            >
+          </li>
+                    <li>
+            <a href="https://www.omu.ac.jp/med/bacteriology/" target="_blank"
+              >大阪公立大学大学院医学研究科細菌学</a
+            >
+          </li>
+        </ul>
+      </section>
     </main>
 
-    <footer>© 2025 感染症統合プロジェクト — ver.1.2</footer>
+    <footer>
+      <p>© 2025 感染症統合プロジェクト — ver.1.2</p>
+      <p>このツールはChatGPTを用いて作成しています。</p>
+    </footer>
 
     <script src="script.js"></script>
     <script src="statics.js"></script>
