@@ -2,6 +2,9 @@
  * グローバル状態
  *********************************************************/
 let questionList = [];       // 読み込んだ既存問題 (data.csv)
+const questionMap = {};     // key: question_id → 問題オブジェクト
+const loadedFileNames = []; // 読み込んだファイル名の表示用
+
 let historyList = [];        // 出題履歴 (history.csv)
 let newQuestions = [];       // 新規・改訂で追加された問題 (new.csv 出力用)
 
@@ -229,7 +232,7 @@ function addKeywordToInput(word) {
  * 入出力（CSV読み込み、エクスポート）
  *********************************************************/
 function initIO() {
-  const csvInput = document.getElementById("csvFile");
+  const csvInput = document.getElementById("csvInput");
   const histInput = document.getElementById("historyFile");
   const dlNewBtn = document.getElementById("downloadNewBtn");
   const dlUpdBtn = document.getElementById("downloadUpdateBtn");
@@ -284,47 +287,76 @@ function readCSV(file, type) {
     const header = rows[0];
     const dataRows = rows.slice(1);
 
-if (type === "question") {
-  questionList = dataRows.map(r => {
-    const raw = rowToObj(r, header);
+    if (type === "question") {
+      // 1行ずつマージしていく
+      dataRows.forEach(r => {
+        const raw = rowToObj(r, header);
 
-    // 列名のゆらぎ吸収
-    return {
-      question_id: raw.question_id || raw.ID || raw["問題ID"] || "",
-      case_id: raw.case_id || raw["症例ID"] || "",
-      case_text: raw.case_text || raw["症例文"] || "",
-      title: raw.title || raw["タイトル"] || "",
-      department: raw.department || raw["教室"] || "",
-      author: raw.author || raw["作問者"] || "",
-      language: raw.language || raw["言語"] || "",
-      difficulty: raw.difficulty || raw["難易度"] || "",
-      domain1: raw.domain1 || raw["領域1"] || "",
-      domain2: raw.domain2 || raw["領域2"] || "",
-      active: raw.active || raw["active"] || raw["状態"] || "",
-      tag: raw.tag || raw["タグ"] || "",
-      question_text: raw.question_text || raw["問題文"] || "",
-      choice_a: raw.choice_a || raw["選択肢1"] || "",
-      choice_b: raw.choice_b || raw["選択肢2"] || "",
-      choice_c: raw.choice_c || raw["選択肢3"] || "",
-      choice_d: raw.choice_d || raw["選択肢4"] || "",
-      choice_e: raw.choice_e || raw["選択肢5"] || "",
-      correct: raw.correct || raw["正解"] || "",
-      keywords: raw.keywords || raw["キーワード"] || "",
-      image_file: raw.image_file || raw["画像"] || "",
-      comment: raw.comment || raw["自由コメント"] || "",
-      explanation: raw.explanation || raw["解説"] || "",
-      created_at: raw.created_at || raw["作成日時"] || "",
-      updated_at: raw.updated_at || raw["最終更新日時"] || "",
-      revision_note: raw.revision_note || raw["修正メモ"] || ""
-    };
-  });
+        // 列名のゆらぎ吸収（ここで標準形にそろえる）
+        const normalized = {
+          question_id: raw.question_id || raw.ID || raw["問題ID"] || "",
+          case_id: raw.case_id || raw["症例ID"] || "",
+          case_text: raw.case_text || raw["症例文"] || "",
+          title: raw.title || raw["タイトル"] || "",
+          department: raw.department || raw["教室"] || "",
+          author: raw.author || raw["作問者"] || "",
+          language: raw.language || raw["言語"] || "",
+          difficulty: raw.difficulty || raw["難易度"] || "",
+          domain1: raw.domain1 || raw["領域1"] || "",
+          domain2: raw.domain2 || raw["領域2"] || "",
+          active: raw.active || raw["active"] || raw["状態"] || "",
+          tag: raw.tag || raw["タグ"] || "",
+          question_text: raw.question_text || raw["問題文"] || "",
+          choice_a: raw.choice_a || raw["選択肢1"] || "",
+          choice_b: raw.choice_b || raw["選択肢2"] || "",
+          choice_c: raw.choice_c || raw["選択肢3"] || "",
+          choice_d: raw.choice_d || raw["選択肢4"] || "",
+          choice_e: raw.choice_e || raw["選択肢5"] || "",
+          correct: raw.correct || raw["正解"] || "",
+          keywords: raw.keywords || raw["キーワード"] || "",
+          image_file: raw.image_file || raw["画像"] || "",
+          comment: raw.comment || raw["自由コメント"] || "",
+          explanation: raw.explanation || raw["解説"] || "",
+          created_at: raw.created_at || raw["作成日時"] || "",
+          updated_at: raw.updated_at || raw["最終更新日時"] || "",
+          revision_note: raw.revision_note || raw["修正メモ"] || ""
+        };
 
-  renderTable(questionList);
-  if (typeof renderStatsView === "function") {
-    renderStatsView();
-  }
-}
- else if (type === "history") {
+        const id = normalized.question_id;
+        if (!id) {
+          // IDがない行はスキップ
+          return;
+        }
+
+        // すでに同じIDがあるか
+        if (questionMap[id]) {
+          const current = questionMap[id];
+          // 空でない項目だけ上書き（後勝ち）
+          Object.keys(normalized).forEach(key => {
+            const val = normalized[key];
+            if (val !== "" && val != null) {
+              current[key] = val;
+            }
+          });
+          // どのファイルから来たか残す
+          current._source = file.name || current._source || "";
+        } else {
+          // 新規IDならそのまま入れる
+          normalized._source = file.name || "";
+          questionMap[id] = normalized;
+        }
+      });
+
+      // 表示用リストに変換
+      questionList = Object.values(questionMap);
+
+      renderTable(questionList);
+      if (typeof renderStatsView === "function") {
+        renderStatsView();
+      }
+    }
+
+    else if (type === "history") {
       historyList = dataRows.map(r => rowToObj(r, header));
 
       // ▼ 追加：履歴読み込み後も統計再描画しておく（必要なら）
@@ -333,7 +365,11 @@ if (type === "question") {
       }
     }
 
-    alert(type === "question" ? "問題データを読み込みました" : "履歴データを読み込みました");
+    alert(
+      type === "question"
+        ? (file.name ? `${file.name} を読み込みました` : "問題データを読み込みました")
+        : "履歴データを読み込みました"
+    );
   };
   reader.readAsText(file, "utf-8");
 }

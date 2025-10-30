@@ -661,7 +661,8 @@
           <h3>過去データ読み込み</h3>
           <label
             >問題CSV
-            <input type="file" id="csvFile" accept=".csv" />
+            <input type="file" id="csvInput" accept=".csv" multiple />
+            <div id="loadedFiles" class="loaded-files"></div>
           </label>
           <label
             >出題履歴CSV
@@ -809,5 +810,7 @@
 
     <script src="script.js"></script>
     <script src="statics.js"></script>
+    <button id="backToTopBtn" type="button">TOP</button>
+    <script src="topbutton.js"></script>
   </body>
 </html>
