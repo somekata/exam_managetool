@@ -818,40 +818,44 @@ function insertHTMLAtCursor(targetEl, htmlString) {
 }
 
 // 許可タグのみ (b,strong,i,em,u)
-// ===== sanitizeHTML を差し替え =====
+/* ===== sanitizeHTML を差し替え ===== */
 function sanitizeHTML(html, fieldId) {
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
 
-  const walker = document.createTreeWalker(tmp, NodeFilter.SHOW_ELEMENT, null);
-  const toStripAttrs = [];
-  const toUnwrap = [];
+  // ▼ここで許可フィールドを指定（装飾を維持したい項目）
+  const richFields = [
+    "questionText",
+    "choiceA", "choiceB", "choiceC", "choiceD", "choiceE",
+    "commentField",
+    "explanationField"
+  ];
 
-  // フィールドごとに許可タグを切り替える
+  // ▼許可タグ（装飾の種類）
   let allowed = [];
-  if (["commentField", "explanationField"].includes(fieldId)) {
-    allowed = ["b", "strong", "i", "em", "u"];  // ← 教員コメント・学生解説のみ装飾OK
+  if (richFields.includes(fieldId)) {
+    allowed = ["b", "strong", "i", "em", "u", "br"];
   } else {
-    allowed = [];  // ← それ以外は装飾禁止（完全プレーンテキスト）
+    allowed = [];
   }
 
+  const walker = document.createTreeWalker(tmp, NodeFilter.SHOW_ELEMENT, null);
+  const toUnwrap = [];
+
   while (walker.nextNode()) {
-    const el = walker.currentNode;
-    const tag = el.tagName.toLowerCase();
-    if (!allowed.includes(tag)) {
-      toUnwrap.push(el);
-    } else {
-      for (let i = el.attributes.length - 1; i >= 0; i--) {
-        toStripAttrs.push({ node: el, name: el.attributes[i].name });
-      }
+    const node = walker.currentNode;
+    const tag = node.tagName?.toLowerCase();
+    if (tag && !allowed.includes(tag)) {
+      toUnwrap.push(node);
     }
   }
 
-  toStripAttrs.forEach(({ node, name }) => node.removeAttribute(name));
+  // 不許可タグを unwrap
   toUnwrap.forEach(node => {
-    const parent = node.parentNode;
-    while (node.firstChild) parent.insertBefore(node.firstChild, node);
-    parent.removeChild(node);
+    while (node.firstChild) {
+      node.parentNode.insertBefore(node.firstChild, node);
+    }
+    node.remove();
   });
 
   return tmp.innerHTML;
@@ -947,11 +951,27 @@ function updateExistingQuestionWithLockRules() {
   // soft領域だけ反映する
   autoSetTimestamps(false);
 
-  target.choice_a = sanitizeHTML(document.getElementById("choiceA").innerHTML.trim());
-  target.choice_b = sanitizeHTML(document.getElementById("choiceB").innerHTML.trim());
-  target.choice_c = sanitizeHTML(document.getElementById("choiceC").innerHTML.trim());
-  target.choice_d = sanitizeHTML(document.getElementById("choiceD").innerHTML.trim());
-  target.choice_e = sanitizeHTML(document.getElementById("choiceE").innerHTML.trim());
+target.choice_a = sanitizeHTML(
+  document.getElementById("choiceA").innerHTML.trim(),
+  "choiceA"
+);
+target.choice_b = sanitizeHTML(
+  document.getElementById("choiceB").innerHTML.trim(),
+  "choiceB"
+);
+target.choice_c = sanitizeHTML(
+  document.getElementById("choiceC").innerHTML.trim(),
+  "choiceC"
+);
+target.choice_d = sanitizeHTML(
+  document.getElementById("choiceD").innerHTML.trim(),
+  "choiceD"
+);
+target.choice_e = sanitizeHTML(
+  document.getElementById("choiceE").innerHTML.trim(),
+  "choiceE"
+);
+
 
   target.correct = Array.from(document.querySelectorAll(".correct:checked"))
     .map(c => c.value)
@@ -1151,12 +1171,16 @@ function collectFormAsObject() {
     active: getValRaw("active"),
     tag: getValRaw("tag"),
 
-    question_text: sanitizeHTML(document.getElementById("questionText").innerHTML.trim()),
-    choice_a: sanitizeHTML(document.getElementById("choiceA").innerHTML.trim()),
-    choice_b: sanitizeHTML(document.getElementById("choiceB").innerHTML.trim()),
-    choice_c: sanitizeHTML(document.getElementById("choiceC").innerHTML.trim()),
-    choice_d: sanitizeHTML(document.getElementById("choiceD").innerHTML.trim()),
-    choice_e: sanitizeHTML(document.getElementById("choiceE").innerHTML.trim()),
+question_text: sanitizeHTML(
+  document.getElementById("questionText").innerHTML.trim(),
+  "questionText"
+),
+choice_a: sanitizeHTML(document.getElementById("choiceA").innerHTML.trim(), "choiceA"),
+choice_b: sanitizeHTML(document.getElementById("choiceB").innerHTML.trim(), "choiceB"),
+choice_c: sanitizeHTML(document.getElementById("choiceC").innerHTML.trim(), "choiceC"),
+choice_d: sanitizeHTML(document.getElementById("choiceD").innerHTML.trim(), "choiceD"),
+choice_e: sanitizeHTML(document.getElementById("choiceE").innerHTML.trim(), "choiceE"),
+
     correct: correctAns,
     keywords: getValRaw("keywordInput"),
 
